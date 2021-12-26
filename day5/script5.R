@@ -71,57 +71,38 @@ min_Y <- min(c(df_5.2$Y1, df_5.2$Y2))
 mat_2 <- matrix(0, nrow = max_Y+1, ncol = max_X+1)
 # mat[2,3]
 
-overlapping_points_d <- function(m, coords) {
+overlapping_points_d <- function(mtx, coords) {
   
   for(i in 1:nrow(coords)) {
     coords_s <- coords[i,]
     
     if(coords_s$X1==coords_s$X2) { # x same coord
       for(j in min(coords_s$Y1, coords_s$Y2):max(coords_s$Y1, coords_s$Y2)) {
-        mat[coords_s$X1, j] <- mat[coords_s$X1, j] + 1
+        mtx[coords_s$X1, j] <- mtx[coords_s$X1, j] + 1
       }
     }
     
     else if(coords_s$Y1==coords_s$Y2) { # y same coord
       for(k in min(coords_s$X1, coords_s$X2):max(coords_s$X1, coords_s$X2)) {
-        mat[k, coords_s$Y1] <- mat[k, coords_s$Y1] + 1
+        mtx[k, coords_s$Y1] <- mtx[k, coords_s$Y1] + 1
       }
     } 
     
-    else if(min(coords_s$X1, coords_s$X2) == coords_s$X1 & min(coords_s$Y1, coords_s$Y2) == coords_s$Y1) { # (1,1),(5,5) x incr, y incr
-      m <- -1 
-      while(coords_s$X1 + m <= coords_s$X2) {
-        m <- m + 1
-        mat[coords_s$X1 + m, coords_s$Y1 + m] <- mat[coords_s$X1 + m, coords_s$Y1 + m] + 1
-        }
-      } 
-    
-    else if (min(coords_s$X1, coords_s$X2) == coords_s$X1 & min(coords_s$Y1, coords_s$Y2) == coords_s$Y2) { # (3,5),(5,3) x incr, y decr
-        m <- -1 
-        while(coords_s$X1 + m <= coords_s$X2) {
-          m <- m + 1
-          mat[coords_s$X1 + m, coords_s$Y1 - m] <- mat[coords_s$X1 + m, coords_s$Y1 - m] + 1
-        }
-      } 
-    
-    else if(min(coords_s$Y1, coords_s$Y2) == coords_s$Y1) { # x decr, y incr
-      m <- -1
-      while(coords_s$Y1 + m <= coords_s$Y2) {
-        m <- m + 1
-        mat[coords_s$X1 - m, coords_s$Y1 + m] <- mat[coords_s$X1 - m, coords_s$Y1 + m] + 1
-      }}
-    
-    else {
-      m <- -1
-      while(coords_s$Y1 - m <= coords_s$Y2) {
-        m <- m + 1
-        mat[coords_s$X1 - m, coords_s$Y1 - m] <- mat[coords_s$X1 - m, coords_s$Y1 - m] + 1
+    else { # diag
+      seq_x <- coords_s$X1:coords_s$X2
+      seq_y <- coords_s$Y1:coords_s$Y2
+      len_seq_x <- length(seq_x)
+      len_seq_y <- length(seq_y)
+      
+      for(m in 1:len_seq_x) {
+        mtx[seq_x[m], seq_y[m]] <- mtx[seq_x[m], seq_y[m]] + 1
       }
     }
-    }
-  return(mat)
+    
+  }
+  return(mtx)
 }
 
 debugonce(overlapping_points_d)
 result_5.2 <- overlapping_points_d(mat_2, df_5.2)
-answ_5.2 <- length(result[result>=2])
+answ_5.2 <- length(result_5.2[result_5.2>=2])
